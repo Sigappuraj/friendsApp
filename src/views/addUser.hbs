@@ -1,0 +1,69 @@
+<div class="container">
+  <h1>Register form</h1>
+  <form id="register-form" action="{{action}}" method="{{method}}" _method="{{method}}">
+    <label for="fname">First name:</label>
+    <input type="text" id="fname" name="firstName" value="{{users.firstName}}" placeholder="First Name" required />
+    <br />
+    <label for="lname">Last name:</label>
+    <input type="text" id="lname" name="lastName" value="{{users.lastName}}" placeholder="Last Name" required />
+    <br />
+    <label for="user-email">Email:</label>
+    <input type="text" id="email" name="email" value="{{users.email}}" placeholder="Email" required />
+    <br />
+    <label for="user-email">Password:</label>
+    <input type="password" id="pwd" name="password" value="{{users.password}}" placeholder="password" required />
+    <br />
+    <input class="btn btn-primary" type="submit" value="Register" />
+  </form>
+</div>
+
+<script>
+
+  const $addUserForm = document.querySelector("#register-form");
+
+  $addUserForm.addEventListener("submit", event => {
+    event.preventDefault();
+
+    const submitUrl = $addUserForm.action;
+    const submitMethod = $addUserForm.getAttribute("_method");
+    const formData = new FormData($addUserForm);
+    let userDetail = {};
+    for (const fields of formData.entries()) {
+      const [key, value] = fields;
+      userDetail[key] = value;
+    }
+
+    const config = {
+      method: submitMethod.toUpperCase(),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userDetail)
+    }
+
+    fetch(submitUrl, config)
+      .then(response => {
+        if (response.status === 200) {
+          return response.json()
+        } else {
+          throw (new Error(response.status))
+        }
+      })
+      .then(data => {
+        alert(data.message);
+        window.location.href = "/login"
+      })
+      .catch(error => {
+        switch (error.message) {
+          case "400":
+            alert("Please check form values...");
+            break;
+          case "500":
+            alert("Please Try after some time...");
+            break;
+          default:
+            console.error(error);
+        }
+      })
+  });
+</script>
